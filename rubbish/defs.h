@@ -1,4 +1,6 @@
 //Rubbish language definitions. Opcodes and such.
+#pragma once
+
 #include <vector>
 #include <map>
 #include <memory>
@@ -52,6 +54,7 @@ namespace rubbish {
 		Value value;
 
 		Instruction();
+		Instruction(InstructionType instructionType);
 		Instruction(InstructionType instructionType, const Value& value);
 	};
 

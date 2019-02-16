@@ -10,6 +10,10 @@ rubbish::Value::Value(ValueType valueType, const ValueValue& value)
 rubbish::Instruction::Instruction() : type(InstructionType::INST_NOP) {
 }
 
+rubbish::Instruction::Instruction(InstructionType instructionType) 
+	: type(instructionType) {
+}
+
 rubbish::Instruction::Instruction(InstructionType instructionType, const Value & value) 
 	: type(instructionType), value(value) {
 }
