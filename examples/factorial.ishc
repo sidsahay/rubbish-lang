@@ -4,30 +4,34 @@ push "Enter_a_number:"
 call "printLn"
 pop
 call "getOneInt"
+push 1
 call "factorial"
 call "printLn"
 pop
 ret
 #endfunction
-#function "factorial" 0
+#function "factorial" 2
+storevar "acc"
+pop
 storevar "n"
 pop
 loadvar "n"
-push 1
-sub
-jz 12
+jnz 4
 pop
+loadvar "acc"
+ret
+pop
+loadvar "acc"
 loadvar "n"
-loadvar "n"
-push 1
-sub
-call "factorial"
 mul
-storevar "n"
+storevar "acc1"
 pop
 loadvar "n"
-ret
+push 1
+sub
+storevar "n1"
 pop
-loadvar "n"
-ret
+loadvar "n1"
+loadvar "acc1"
+retcall "factorial"
 #endfunction

@@ -103,6 +103,13 @@ Context * rubbish::parser::ParseFile(std::string path) {
 				i.type = InstructionType::INST_RET;
 				funcInfo->instructions.push_back(i);
 			}
+			else if (EQ(token, "retcall")) {
+				Instruction i;
+				i.type = InstructionType::INST_RETCALL;
+				token = strtok(NULL, " ");
+				i.value = ParseValue(token);
+				funcInfo->instructions.push_back(i);
+			}
 			else if (EQ(token, "push")) {
 				Instruction i;
 				i.type = InstructionType::INST_PUSH;

@@ -49,7 +49,11 @@ void rubbish::Context::ExecuteInstruction(const Instruction & instr) {
 	case InstructionType::INST_RET:
 		ExecuteRet(instr);
 		break;
-
+	
+	case InstructionType::INST_RETCALL:
+		ExecuteRetcall(instr);
+		break;
+	
 	case InstructionType::INST_PUSH:
 		ExecutePush(instr);
 		break;
@@ -165,6 +169,33 @@ void rubbish::Context::ExecuteRet(const Instruction & instr) {
 	auto frame = callStack.top();
 	delete frame;
 	callStack.pop();
+}
+
+void rubbish::Context::ExecuteRetcall(const Instruction & instr)
+{
+	auto frame = callStack.top();
+	delete frame;
+	callStack.pop();
+
+	auto found = functionStore.find(instr.value.value.stringVal);
+	if (found != functionStore.end()) {
+		auto fInfo = found->second;
+
+		switch (fInfo->type) {
+		case FunctionType::FUNC_NATIVE:
+			fInfo->nativeFunction(dataStack);
+			break;
+
+		case FunctionType::FUNC_RUBBISH:
+			auto framePtr = new Frame;
+			framePtr->functionInfo = fInfo;
+			framePtr->instPtr = 0;
+			callStack.push(framePtr);
+		}
+	}
+	else {
+		throw new std::exception;
+	}
 }
 
 void rubbish::Context::ExecutePush(const Instruction & instr) {

@@ -40,6 +40,7 @@ namespace rubbish {
 		INST_LOADVAR,
 		INST_CALL,
 		INST_RET,
+		INST_RETCALL,
 		INST_PUSH,
 		INST_POP,
 		INST_ADD,
@@ -106,6 +107,7 @@ namespace rubbish {
 		void ExecuteLoadVar(const Instruction& instr);
 		void ExecuteCall(const Instruction& instr);
 		void ExecuteRet(const Instruction& instr);
+		void ExecuteRetcall(const Instruction& instr);
 		void ExecutePush(const Instruction& instr);
 		void ExecutePop(const Instruction& instr);
 		void ExecuteAdd(const Instruction& instr);
