@@ -40,12 +40,15 @@ namespace rubbish {
 		INST_LOADVAR,
 		INST_CALL,
 		INST_RET,
-		INST_PUSHIMM,
+		INST_PUSH,
 		INST_POP,
 		INST_ADD,
 		INST_SUB,
 		INST_MUL,
 		INST_DIV,
+		INST_JNZ,
+		INST_JZ,
+		INST_JMP,
 		INST_NOP
 	};
 
@@ -89,22 +92,30 @@ namespace rubbish {
 		std::stack<Value> dataStack;
 		std::stack<Frame*> callStack;
 
+		std::string topFunctionName;
+
 		void RegisterFunction(FunctionInfo* functionInfo);
+		void RegisterNativeFunction(std::string name, int arity, std::function<bool(std::stack<Value>&)> func);
+		void RegisterRubbishFunction(std::string name, int arity, const std::vector<Instruction>& instructions);
 		
 		void ExecuteInstruction(const Instruction& instr);
 		void LoadFunctionForExecution(std::string funcName);
+		void LoadInternalTopLevelFunction();
 
 		void ExecuteStoreVar(const Instruction& instr);
 		void ExecuteLoadVar(const Instruction& instr);
 		void ExecuteCall(const Instruction& instr);
 		void ExecuteRet(const Instruction& instr);
-		void ExecutePushImm(const Instruction& instr);
+		void ExecutePush(const Instruction& instr);
 		void ExecutePop(const Instruction& instr);
 		void ExecuteAdd(const Instruction& instr);
 		void ExecuteSub(const Instruction& instr);
 		void ExecuteMul(const Instruction& instr);
 		void ExecuteDiv(const Instruction& instr);
 		void ExecuteNop(const Instruction& instr);
+		void ExecuteJnz(const Instruction& instr);
+		void ExecuteJz(const Instruction& instr);
+		void ExecuteJmp(const Instruction& instr);
 
 		void ExecuteAll();
 	};

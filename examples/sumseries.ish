@@ -1,0 +1,24 @@
+#topfunction "main"
+#function "main" 0
+push 3
+push "Enter_a_number:"
+call "printLn"
+pop
+call "getOneInt"
+storevar "n"
+pop
+loadvar "n"
+loadvar "n"
+push 1
+add
+mul
+push 2
+div
+call "printLn"
+pop
+push 1
+sub
+jnz -17
+pop
+ret
+#endfunction

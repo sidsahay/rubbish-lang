@@ -22,6 +22,15 @@ void rubbish::Context::RegisterFunction(FunctionInfo * functionInfo) {
 	functionStore[functionInfo->name] = functionInfo;
 }
 
+void rubbish::Context::RegisterNativeFunction(std::string name, int arity, std::function<bool(std::stack<Value>&)> func) {
+	FunctionInfo* funcInfo = new FunctionInfo;
+	funcInfo->name = name;
+	funcInfo->arity = arity;
+	funcInfo->type = FunctionType::FUNC_NATIVE;
+	funcInfo->nativeFunction = func;
+	RegisterFunction(funcInfo);
+}
+
 void rubbish::Context::ExecuteInstruction(const Instruction & instr) {
 	switch (instr.type) {
 
@@ -41,8 +50,8 @@ void rubbish::Context::ExecuteInstruction(const Instruction & instr) {
 		ExecuteRet(instr);
 		break;
 
-	case InstructionType::INST_PUSHIMM:
-		ExecutePushImm(instr);
+	case InstructionType::INST_PUSH:
+		ExecutePush(instr);
 		break;
 
 	case InstructionType::INST_POP:
@@ -67,6 +76,18 @@ void rubbish::Context::ExecuteInstruction(const Instruction & instr) {
 
 	case InstructionType::INST_NOP:
 		ExecuteNop(instr);
+		break;
+
+	case InstructionType::INST_JNZ:
+		ExecuteJnz(instr);
+		break;
+
+	case InstructionType::INST_JZ:
+		ExecuteJz(instr);
+		break;
+
+	case InstructionType::INST_JMP:
+		ExecuteJmp(instr);
 		break;
 	}
 }
@@ -93,10 +114,13 @@ void rubbish::Context::LoadFunctionForExecution(std::string funcName) {
 	}
 }
 
+void rubbish::Context::LoadInternalTopLevelFunction() {
+	LoadFunctionForExecution(topFunctionName);
+}
+
 void rubbish::Context::ExecuteStoreVar(const Instruction & instr) {
 	auto frame = callStack.top();
 	auto varVal = dataStack.top();
-	dataStack.pop();
 	frame->dataStore[instr.value.value.stringVal] = varVal;
 	(frame->instPtr)++;
 }
@@ -143,7 +167,7 @@ void rubbish::Context::ExecuteRet(const Instruction & instr) {
 	callStack.pop();
 }
 
-void rubbish::Context::ExecutePushImm(const Instruction & instr) {
+void rubbish::Context::ExecutePush(const Instruction & instr) {
 	auto frame = callStack.top();
 	dataStack.push(instr.value);
 	(frame->instPtr)++;
@@ -234,6 +258,46 @@ void rubbish::Context::ExecuteDiv(const Instruction & instr) {
 void rubbish::Context::ExecuteNop(const Instruction & instr) {
 	auto frame = callStack.top();
 	(frame->instPtr)++;
+}
+
+void rubbish::Context::ExecuteJnz(const Instruction & instr)
+{
+	auto frame = callStack.top();
+	checkTypeThrow(instr.value, ValueType::VAL_INTEGER);
+	int offset = instr.value.value.integerVal;
+	auto top = dataStack.top();
+	checkTypeThrow(top, ValueType::VAL_INTEGER);
+	if (top.value.integerVal != 0) {
+		(frame->instPtr) += offset;
+	}
+	else {
+		(frame->instPtr)++;
+	}
+}
+
+void rubbish::Context::ExecuteJz(const Instruction & instr)
+{
+	auto frame = callStack.top();
+	checkTypeThrow(instr.value, ValueType::VAL_INTEGER);
+	int offset = instr.value.value.integerVal;
+	auto top = dataStack.top();
+	checkTypeThrow(top, ValueType::VAL_INTEGER);
+	if (top.value.integerVal == 0) {
+		(frame->instPtr) += offset;
+	}
+	else {
+		(frame->instPtr)++;
+	}
+}
+
+void rubbish::Context::ExecuteJmp(const Instruction & instr)
+{
+	auto frame = callStack.top();
+	checkTypeThrow(instr.value, ValueType::VAL_INTEGER);
+	int offset = instr.value.value.integerVal;
+	auto top = dataStack.top();
+	checkTypeThrow(top, ValueType::VAL_INTEGER);
+	(frame->instPtr) += offset;
 }
 
 void rubbish::Context::ExecuteAll() {

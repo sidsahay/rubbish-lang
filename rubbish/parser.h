@@ -1,21 +1,17 @@
 //Rubbish bytecode parser. Currently only for the human readable stuff.
-
-//Example rubbish bytecode file
-/*
-#topfunction "main" //function that starts execution
-#function "main"
-pushimm 5
-pushimm 6
-add
-call "print" //print is a stdlib function
-#endfunction
-*/
-/* Grammar
-Line = TopFunctionDirective | FunctionDirective | Operation
-TopFunctionDirective =  #topfunction String
-FunctionDirective = #function String | #endfunction
-Operation = pushimm Value | pop | call String | ret | add | sub | mul | div | nop | storeval String | loadval String
-Value = Integer | Double | String
-*/
+//THIS IS A TERRIBLE PARSER PLEASE DO NOT USE IT UNLESS YOU HAVE TO
+#pragma once
 
 #include <cstring>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+#include "defs.h"
+
+namespace rubbish {
+	namespace parser {
+		Context* ParseFile(std::string path);
+		Value ParseValue(char* buf);
+	};
+};
