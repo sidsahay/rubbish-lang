@@ -1,0 +1,33 @@
+#topfunction "main"
+#function "main" 0
+push "Enter_a_number:"
+call "printLn"
+pop
+call "getOneInt"
+call "factorial"
+call "printLn"
+pop
+ret
+#endfunction
+#function "factorial" 0
+storevar "n"
+pop
+loadvar "n"
+push 1
+sub
+jz 12
+pop
+loadvar "n"
+loadvar "n"
+push 1
+sub
+call "factorial"
+mul
+storevar "n"
+pop
+loadvar "n"
+ret
+pop
+loadvar "n"
+ret
+#endfunction

@@ -295,8 +295,6 @@ void rubbish::Context::ExecuteJmp(const Instruction & instr)
 	auto frame = callStack.top();
 	checkTypeThrow(instr.value, ValueType::VAL_INTEGER);
 	int offset = instr.value.value.integerVal;
-	auto top = dataStack.top();
-	checkTypeThrow(top, ValueType::VAL_INTEGER);
 	(frame->instPtr) += offset;
 }
 
