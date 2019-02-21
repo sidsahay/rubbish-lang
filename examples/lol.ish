@@ -1,0 +1,10 @@
+fn main() {
+    printLn("Enter_a_number:");
+    n = getOneInt();
+    out = (n * add(n, 1)) / 2;
+    printLn(out);
+    return 0;
+}
+fn add(a, b) {
+    return a + b;
+}

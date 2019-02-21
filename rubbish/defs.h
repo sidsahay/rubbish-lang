@@ -47,9 +47,14 @@ namespace rubbish {
 		INST_SUB,
 		INST_MUL,
 		INST_DIV,
-		INST_JNZ,
-		INST_JZ,
+		INST_JTRUE,
 		INST_JMP,
+		INST_GT,
+		INST_LT,
+		INST_EQ,
+		INST_NOT,
+		INST_AND,
+		INST_OR,
 		INST_NOP
 	};
 
@@ -115,9 +120,14 @@ namespace rubbish {
 		void ExecuteMul(const Instruction& instr);
 		void ExecuteDiv(const Instruction& instr);
 		void ExecuteNop(const Instruction& instr);
-		void ExecuteJnz(const Instruction& instr);
-		void ExecuteJz(const Instruction& instr);
+		void ExecuteJtrue(const Instruction& instr);
 		void ExecuteJmp(const Instruction& instr);
+		void ExecuteGt(const Instruction& instr);
+		void ExecuteLt(const Instruction& instr);
+		void ExecuteEq(const Instruction& instr);
+		void ExecuteNot(const Instruction& instr);
+		void ExecuteAnd(const Instruction& instr);
+		void ExecuteOr(const Instruction& instr);
 
 		void ExecuteAll();
 	};

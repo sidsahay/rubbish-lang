@@ -46,6 +46,7 @@ Context * rubbish::parser::ParseFile(std::string path) {
 		MAKE_ZERO(buf);
 		in.getline(buf, BUF_SIZE);
 		char* token = strtok(buf, " ");
+		if ((token == NULL) || EQ(token, "")) continue;
 
 		if (state == TOP_LEVEL) {
 			if (EQ(token, "#topfunction")) {
@@ -147,16 +148,9 @@ Context * rubbish::parser::ParseFile(std::string path) {
 				i.type = InstructionType::INST_NOP;
 				funcInfo->instructions.push_back(i);
 			}
-			else if (EQ(token, "jnz")) {
+			else if (EQ(token, "jtrue")) {
 				Instruction i;
-				i.type = InstructionType::INST_JNZ;
-				token = strtok(NULL, " ");
-				i.value = ParseValue(token);
-				funcInfo->instructions.push_back(i);
-			}
-			else if (EQ(token, "jz")) {
-				Instruction i;
-				i.type = InstructionType::INST_JZ;
+				i.type = InstructionType::INST_JTRUE;
 				token = strtok(NULL, " ");
 				i.value = ParseValue(token);
 				funcInfo->instructions.push_back(i);
@@ -166,6 +160,36 @@ Context * rubbish::parser::ParseFile(std::string path) {
 				i.type = InstructionType::INST_JMP;
 				token = strtok(NULL, " ");
 				i.value = ParseValue(token);
+				funcInfo->instructions.push_back(i);
+			}
+			else if (EQ(token, "gt")) {
+				Instruction i;
+				i.type = InstructionType::INST_GT;
+				funcInfo->instructions.push_back(i);
+			}
+			else if (EQ(token, "lt")) {
+				Instruction i;
+				i.type = InstructionType::INST_LT;
+				funcInfo->instructions.push_back(i);
+			}
+			else if (EQ(token, "eq")) {
+				Instruction i;
+				i.type = InstructionType::INST_EQ;
+				funcInfo->instructions.push_back(i);
+			}
+			else if (EQ(token, "not")) {
+				Instruction i;
+				i.type = InstructionType::INST_NOT;
+				funcInfo->instructions.push_back(i);
+			}
+			else if (EQ(token, "and")) {
+				Instruction i;
+				i.type = InstructionType::INST_AND;
+				funcInfo->instructions.push_back(i);
+			}
+			else if (EQ(token, "or")) {
+				Instruction i;
+				i.type = InstructionType::INST_NOP;
 				funcInfo->instructions.push_back(i);
 			}
 			else {
@@ -187,6 +211,16 @@ Value rubbish::parser::ParseValue(char * buf) {
 		strcpy_s(internBuf, strlen(buf) + 1, buf);
 		v.type = ValueType::VAL_STRING;
 		v.value.stringVal = internBuf;
+	}
+	else if (buf[0] == '%') {
+		if (EQ(buf, "%true")) {
+			v.type = ValueType::VAL_BOOL;
+			v.value.boolVal = true;
+		}
+		else {
+			v.type = ValueType::VAL_BOOL;
+			v.value.boolVal = false;
+		}
 	}
 	else {
 		v.type = ValueType::VAL_INTEGER;

@@ -15,14 +15,12 @@ int main(int argc, char** argv) {
 		path = argv[1];
 	}
 	else {
-		path = "C:\\Users\\Siddharth\\Source\\Repos\\sidsahay\\rubbish-lang\\examples\\factorial.ishc";
+		path = "C:\\Users\\Siddharth\\Source\\Repos\\sidsahay\\rubbish-lang\\examples\\check5.ishc";
 	}
 
 	auto context = parser::ParseFile(path);
 	context->LoadInternalTopLevelFunction();
 	LoadLibrary(*context);
 	context->ExecuteAll();
-	int x;
-	cin >> x;
 	return 0;
 }

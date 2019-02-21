@@ -1,0 +1,20 @@
+#topfunction "main"
+#function "main" 0
+push "Enter_a_number:"
+call "printLn"
+pop
+call "getOneInt"
+push 5
+sub
+push 0
+eq
+jtrue 5
+push "Not_equal_to_5."
+call "printLn"
+pop
+jmp 4
+push "Equal_to_5"
+call "printLn"
+pop
+ret
+#endfunction

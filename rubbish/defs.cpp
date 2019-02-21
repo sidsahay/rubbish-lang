@@ -82,16 +82,36 @@ void rubbish::Context::ExecuteInstruction(const Instruction & instr) {
 		ExecuteNop(instr);
 		break;
 
-	case InstructionType::INST_JNZ:
-		ExecuteJnz(instr);
-		break;
-
-	case InstructionType::INST_JZ:
-		ExecuteJz(instr);
+	case InstructionType::INST_JTRUE:
+		ExecuteJtrue(instr);
 		break;
 
 	case InstructionType::INST_JMP:
 		ExecuteJmp(instr);
+		break;
+
+	case InstructionType::INST_GT:
+		ExecuteGt(instr);
+		break;
+
+	case InstructionType::INST_LT:
+		ExecuteLt(instr);
+		break;
+
+	case InstructionType::INST_EQ:
+		ExecuteEq(instr);
+		break;
+
+	case InstructionType::INST_NOT:
+		ExecuteNot(instr);
+		break;
+
+	case InstructionType::INST_AND:
+		ExecuteAnd(instr);
+		break;
+
+	case InstructionType::INST_OR:
+		ExecuteOr(instr);
 		break;
 	}
 }
@@ -291,29 +311,15 @@ void rubbish::Context::ExecuteNop(const Instruction & instr) {
 	(frame->instPtr)++;
 }
 
-void rubbish::Context::ExecuteJnz(const Instruction & instr)
+void rubbish::Context::ExecuteJtrue(const Instruction & instr)
 {
 	auto frame = callStack.top();
 	checkTypeThrow(instr.value, ValueType::VAL_INTEGER);
 	int offset = instr.value.value.integerVal;
 	auto top = dataStack.top();
-	checkTypeThrow(top, ValueType::VAL_INTEGER);
-	if (top.value.integerVal != 0) {
-		(frame->instPtr) += offset;
-	}
-	else {
-		(frame->instPtr)++;
-	}
-}
-
-void rubbish::Context::ExecuteJz(const Instruction & instr)
-{
-	auto frame = callStack.top();
-	checkTypeThrow(instr.value, ValueType::VAL_INTEGER);
-	int offset = instr.value.value.integerVal;
-	auto top = dataStack.top();
-	checkTypeThrow(top, ValueType::VAL_INTEGER);
-	if (top.value.integerVal == 0) {
+	dataStack.pop();
+	checkTypeThrow(top, ValueType::VAL_BOOL);
+	if (top.value.boolVal == true) {
 		(frame->instPtr) += offset;
 	}
 	else {
@@ -327,6 +333,138 @@ void rubbish::Context::ExecuteJmp(const Instruction & instr)
 	checkTypeThrow(instr.value, ValueType::VAL_INTEGER);
 	int offset = instr.value.value.integerVal;
 	(frame->instPtr) += offset;
+}
+
+void rubbish::Context::ExecuteGt(const Instruction & instr)
+{
+	auto frame = callStack.top();
+	auto val2 = dataStack.top();
+	dataStack.pop();
+	auto val1 = dataStack.top();
+	dataStack.pop();
+	Value v;
+	v.type = ValueType::VAL_BOOL;
+
+	if (val1.type == ValueType::VAL_INTEGER) {
+		checkTypeThrow(val2, ValueType::VAL_INTEGER);
+		v.value.boolVal = val1.value.integerVal > val2.value.integerVal;
+	}
+	else if (val1.type == ValueType::VAL_DOUBLE) {
+		checkTypeThrow(val2, ValueType::VAL_DOUBLE);
+		v.value.boolVal = val1.value.doubleVal > val2.value.doubleVal;
+	}
+
+	dataStack.push(v);
+	(frame->instPtr)++;
+}
+
+void rubbish::Context::ExecuteLt(const Instruction & instr)
+{
+	auto frame = callStack.top();
+	auto val2 = dataStack.top();
+	dataStack.pop();
+	auto val1 = dataStack.top();
+	dataStack.pop();
+	Value v;
+	v.type = ValueType::VAL_BOOL;
+
+	if (val1.type == ValueType::VAL_INTEGER) {
+		checkTypeThrow(val2, ValueType::VAL_INTEGER);
+		v.value.boolVal = val1.value.integerVal < val2.value.integerVal;
+	}
+	else if (val1.type == ValueType::VAL_DOUBLE) {
+		checkTypeThrow(val2, ValueType::VAL_DOUBLE);
+		v.value.boolVal = val1.value.doubleVal < val2.value.doubleVal;
+	}
+
+	dataStack.push(v);
+	(frame->instPtr)++;
+}
+
+void rubbish::Context::ExecuteEq(const Instruction & instr)
+{
+	auto frame = callStack.top();
+	auto val2 = dataStack.top();
+	dataStack.pop();
+	auto val1 = dataStack.top();
+	dataStack.pop();
+	Value v;
+	v.type = ValueType::VAL_BOOL;
+
+	if (val1.type == ValueType::VAL_INTEGER) {
+		checkTypeThrow(val2, ValueType::VAL_INTEGER);
+		v.value.boolVal = val1.value.integerVal == val2.value.integerVal;
+	}
+	else if (val1.type == ValueType::VAL_DOUBLE) {
+		checkTypeThrow(val2, ValueType::VAL_DOUBLE);
+		v.value.boolVal = val1.value.doubleVal == val2.value.doubleVal;
+	}
+
+	dataStack.push(v);
+	(frame->instPtr)++;
+}
+
+void rubbish::Context::ExecuteNot(const Instruction & instr)
+{
+	auto frame = callStack.top();
+	auto val1 = dataStack.top();
+	dataStack.pop();
+	Value v;
+	v.type = ValueType::VAL_BOOL;
+
+	if (val1.type == ValueType::VAL_BOOL) {
+		v.value.boolVal = !val1.value.boolVal;
+	}
+	else {
+		throw new std::exception;
+	}
+
+	dataStack.push(v);
+	(frame->instPtr)++;
+}
+
+void rubbish::Context::ExecuteAnd(const Instruction & instr)
+{
+	auto frame = callStack.top();
+	auto val2 = dataStack.top();
+	dataStack.pop();
+	auto val1 = dataStack.top();
+	dataStack.pop();
+	Value v;
+	v.type = ValueType::VAL_BOOL;
+
+	if (val1.type == ValueType::VAL_BOOL) {
+		checkTypeThrow(val2, ValueType::VAL_BOOL);
+		v.value.boolVal = val1.value.boolVal && val2.value.boolVal;
+	}
+	else {
+		throw new std::exception;
+	}
+	
+	dataStack.push(v);
+	(frame->instPtr)++;
+}
+
+void rubbish::Context::ExecuteOr(const Instruction & instr)
+{
+	auto frame = callStack.top();
+	auto val2 = dataStack.top();
+	dataStack.pop();
+	auto val1 = dataStack.top();
+	dataStack.pop();
+	Value v;
+	v.type = ValueType::VAL_BOOL;
+
+	if (val1.type == ValueType::VAL_BOOL) {
+		checkTypeThrow(val2, ValueType::VAL_BOOL);
+		v.value.boolVal = val1.value.boolVal || val2.value.boolVal;
+	}
+	else {
+		throw new std::exception;
+	}
+
+	dataStack.push(v);
+	(frame->instPtr)++;
 }
 
 void rubbish::Context::ExecuteAll() {
