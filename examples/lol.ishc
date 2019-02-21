@@ -1,0 +1,57 @@
+#topfunction "main"
+#function "main"
+push "Enter_a_number:"
+call "printLn"
+pop
+call "getOneInt"
+storevar "n"
+pop
+loadvar "n"
+push 5
+eq
+jtrue 4
+loadvar "n"
+call "processFactorial"
+jmp 2
+push "Is_Equal_to_5"
+storevar "out"
+pop
+loadvar "out"
+call "printLn"
+pop
+push 0
+ret
+#endfunction
+#function "processFactorial"
+storevar "n"
+pop
+loadvar "n"
+call "factorial"
+storevar "fact"
+pop
+loadvar "fact"
+call "printLn"
+pop
+push "Is_not_Equal_to_5"
+ret
+#endfunction
+#function "factorial"
+storevar "n"
+pop
+loadvar "n"
+push 0
+eq
+jtrue 8
+loadvar "n"
+loadvar "n"
+push 1
+sub
+call "factorial"
+mul
+jmp 2
+push 1
+storevar "ans"
+pop
+loadvar "ans"
+ret
+#endfunction

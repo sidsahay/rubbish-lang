@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
 		path = argv[1];
 	}
 	else {
-		path = "C:\\Users\\Siddharth\\Source\\Repos\\sidsahay\\rubbish-lang\\examples\\check5.ishc";
+		path = "C:\\Users\\Siddharth\\Source\\Repos\\sidsahay\\rubbish-lang\\examples\\lol.ishc";
 	}
 
 	auto context = parser::ParseFile(path);

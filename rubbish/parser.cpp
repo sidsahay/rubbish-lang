@@ -62,10 +62,10 @@ Context * rubbish::parser::ParseFile(std::string path) {
 				char* name = RecoverString(token);
 				funcInfo->name = std::string(name);
 
-				token = strtok(NULL, " ");
+				/*token = strtok(NULL, " ");
 				int arity = atoi(token);
 				funcInfo->arity = arity;
-				
+				*/
 				state = IN_FUNCTION;
 			}
 			else {

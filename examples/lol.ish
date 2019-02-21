@@ -1,10 +1,18 @@
 fn main() {
     printLn("Enter_a_number:");
     n = getOneInt();
-    out = (n * add(n, 1)) / 2;
+    out = if n == 5 then "Is_Equal_to_5" else processFactorial(n);
     printLn(out);
-    return 0;
+    return 0; 
 }
-fn add(a, b) {
-    return a + b;
+
+fn processFactorial(n) {
+    fact = factorial(n);
+    printLn(fact);
+    return "Is_not_Equal_to_5";
+}
+
+fn factorial(n) {
+    ans = if n == 0 then 1 else n * factorial(n-1);
+    return ans;
 }
