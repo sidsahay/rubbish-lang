@@ -6,12 +6,13 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <memory>
 
 #include "defs.h"
 
 namespace rubbish {
 	namespace parser {
-		Context* ParseFile(std::string path);
+		std::unique_ptr<Context> ParseFile(std::string path);
 		Value ParseValue(char* buf);
 	};
 };

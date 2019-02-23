@@ -1,0 +1,43 @@
+//To check process spawning and message passing
+//Sends a number along a chain of processes
+//Prints the PID and number of each process
+
+fn main() {
+    pid = getPid();
+    print("Enter_a_number:_");
+    n = getOneInt();
+    
+    printPidAndNumber(pid, n);
+
+    childPid = spawn("childProcess", 0);
+    send(childPid, n);
+
+    return 0;
+}
+
+fn childProcess() {
+    pid = getPid();
+
+    number = receive();
+    printPidAndNumber(pid, number);
+
+    out = if pid < 7 then spawnAnotherChild(number) else 0;
+    
+    return 0;
+}
+
+fn spawnAnotherChild(number) {
+    childPid = spawn("childProcess", 0);
+    send(childPid, number);
+
+    return 0;    
+}
+
+fn printPidAndNumber(pid, num) {
+    print("Process_");
+    print(pid);
+    print("_got_number_");
+    printLn(num);
+
+    return 0;
+}

@@ -31,8 +31,8 @@ namespace rubbish {
 	};
 };
 
-Context * rubbish::parser::ParseFile(std::string path) {
-	Context* context = new Context;
+std::unique_ptr<Context> rubbish::parser::ParseFile(std::string path) {
+	auto context = std::make_unique<Context>();
 	FunctionInfo* funcInfo = nullptr;
 
 	char* buf = new char[BUF_SIZE];
@@ -208,7 +208,9 @@ Value rubbish::parser::ParseValue(char * buf) {
 	if (buf[0] == '"') {
 		buf = RecoverString(buf);
 		char* internBuf = new char[strlen(buf) + 1];
-		strcpy_s(internBuf, strlen(buf) + 1, buf);
+		memset(internBuf, 0, (strlen(buf) + 1) * sizeof(char));
+
+		strcpy(internBuf, buf);
 		v.type = ValueType::VAL_STRING;
 		v.value.stringVal = internBuf;
 	}

@@ -15,12 +15,14 @@ int main(int argc, char** argv) {
 		path = argv[1];
 	}
 	else {
-		path = "C:\\Users\\Siddharth\\Source\\Repos\\sidsahay\\rubbish-lang\\examples\\lol.ishc";
+		path = "C:\\Users\\Siddharth\\Source\\Repos\\sidsahay\\rubbish-lang\\examples\\potato.ishc";
 	}
 
-	auto context = parser::ParseFile(path);
-	context->LoadInternalTopLevelFunction();
+	Scheduler scheduler;
+	std::unique_ptr<Context> context = std::move(parser::ParseFile(path));
 	LoadLibrary(*context);
-	context->ExecuteAll();
+	context->LoadInternalTopLevelFunction();
+	scheduler.AddContext(std::move(context));
+	scheduler.ExecuteAll();
 	return 0;
 }

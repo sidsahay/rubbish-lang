@@ -3,9 +3,27 @@
 rubbish::Value::Value() : type(ValueType::VAL_INVALID) {
 }
 
+rubbish::Value::Value(const Value & v) : type(v.type) {
+	if (v.type == ValueType::VAL_STRING) {
+		int len = strlen(v.value.stringVal);
+		value.stringVal = new char[len + 1];
+		value.stringVal[len] = 0;
+		strcpy(value.stringVal, v.value.stringVal);
+	}
+	else {
+		value = v.value;
+	}
+}
+
 rubbish::Value::Value(ValueType valueType, const ValueValue& value) 
 	: type(valueType), value(value) {
 }
+
+//rubbish::Value::~Value() {
+//	if (type == ValueType::VAL_STRING) {
+//		delete value.stringVal;
+//	}
+//}
 
 rubbish::Instruction::Instruction() : type(InstructionType::INST_NOP) {
 }
@@ -18,11 +36,15 @@ rubbish::Instruction::Instruction(InstructionType instructionType, const Value &
 	: type(instructionType), value(value) {
 }
 
+bool rubbish::Context::IsDoneExecuting() {
+	return callStack.empty();
+}
+
 void rubbish::Context::RegisterFunction(FunctionInfo * functionInfo) {
 	functionStore[functionInfo->name] = functionInfo;
 }
 
-void rubbish::Context::RegisterNativeFunction(std::string name, int arity, std::function<bool(std::stack<Value>&)> func) {
+void rubbish::Context::RegisterNativeFunction(std::string name, int arity, std::function<bool(Context&)> func) {
 	FunctionInfo* funcInfo = new FunctionInfo;
 	funcInfo->name = name;
 	funcInfo->arity = arity;
@@ -123,7 +145,7 @@ void rubbish::Context::LoadFunctionForExecution(std::string funcName) {
 
 		switch (fInfo->type) {
 		case FunctionType::FUNC_NATIVE:
-			fInfo->nativeFunction(dataStack);
+			fInfo->nativeFunction(*this);
 			break;
 
 		case FunctionType::FUNC_RUBBISH:
@@ -169,7 +191,7 @@ void rubbish::Context::ExecuteCall(const Instruction & instr) {
 		
 		switch (fInfo->type) {
 		case FunctionType::FUNC_NATIVE:
-			fInfo->nativeFunction(dataStack);
+			fInfo->nativeFunction(*this);
 			break;
 
 		case FunctionType::FUNC_RUBBISH:
@@ -191,8 +213,7 @@ void rubbish::Context::ExecuteRet(const Instruction & instr) {
 	callStack.pop();
 }
 
-void rubbish::Context::ExecuteRetcall(const Instruction & instr)
-{
+void rubbish::Context::ExecuteRetcall(const Instruction & instr) {
 	auto frame = callStack.top();
 	delete frame;
 	callStack.pop();
@@ -203,7 +224,7 @@ void rubbish::Context::ExecuteRetcall(const Instruction & instr)
 
 		switch (fInfo->type) {
 		case FunctionType::FUNC_NATIVE:
-			fInfo->nativeFunction(dataStack);
+			fInfo->nativeFunction(*this);
 			break;
 
 		case FunctionType::FUNC_RUBBISH:
@@ -311,8 +332,7 @@ void rubbish::Context::ExecuteNop(const Instruction & instr) {
 	(frame->instPtr)++;
 }
 
-void rubbish::Context::ExecuteJtrue(const Instruction & instr)
-{
+void rubbish::Context::ExecuteJtrue(const Instruction & instr) {
 	auto frame = callStack.top();
 	checkTypeThrow(instr.value, ValueType::VAL_INTEGER);
 	int offset = instr.value.value.integerVal;
@@ -327,16 +347,14 @@ void rubbish::Context::ExecuteJtrue(const Instruction & instr)
 	}
 }
 
-void rubbish::Context::ExecuteJmp(const Instruction & instr)
-{
+void rubbish::Context::ExecuteJmp(const Instruction & instr) {
 	auto frame = callStack.top();
 	checkTypeThrow(instr.value, ValueType::VAL_INTEGER);
 	int offset = instr.value.value.integerVal;
 	(frame->instPtr) += offset;
 }
 
-void rubbish::Context::ExecuteGt(const Instruction & instr)
-{
+void rubbish::Context::ExecuteGt(const Instruction & instr) {
 	auto frame = callStack.top();
 	auto val2 = dataStack.top();
 	dataStack.pop();
@@ -358,8 +376,7 @@ void rubbish::Context::ExecuteGt(const Instruction & instr)
 	(frame->instPtr)++;
 }
 
-void rubbish::Context::ExecuteLt(const Instruction & instr)
-{
+void rubbish::Context::ExecuteLt(const Instruction & instr) {
 	auto frame = callStack.top();
 	auto val2 = dataStack.top();
 	dataStack.pop();
@@ -381,8 +398,7 @@ void rubbish::Context::ExecuteLt(const Instruction & instr)
 	(frame->instPtr)++;
 }
 
-void rubbish::Context::ExecuteEq(const Instruction & instr)
-{
+void rubbish::Context::ExecuteEq(const Instruction & instr) {
 	auto frame = callStack.top();
 	auto val2 = dataStack.top();
 	dataStack.pop();
@@ -404,8 +420,7 @@ void rubbish::Context::ExecuteEq(const Instruction & instr)
 	(frame->instPtr)++;
 }
 
-void rubbish::Context::ExecuteNot(const Instruction & instr)
-{
+void rubbish::Context::ExecuteNot(const Instruction & instr) {
 	auto frame = callStack.top();
 	auto val1 = dataStack.top();
 	dataStack.pop();
@@ -423,8 +438,7 @@ void rubbish::Context::ExecuteNot(const Instruction & instr)
 	(frame->instPtr)++;
 }
 
-void rubbish::Context::ExecuteAnd(const Instruction & instr)
-{
+void rubbish::Context::ExecuteAnd(const Instruction & instr) {
 	auto frame = callStack.top();
 	auto val2 = dataStack.top();
 	dataStack.pop();
@@ -445,8 +459,7 @@ void rubbish::Context::ExecuteAnd(const Instruction & instr)
 	(frame->instPtr)++;
 }
 
-void rubbish::Context::ExecuteOr(const Instruction & instr)
-{
+void rubbish::Context::ExecuteOr(const Instruction & instr) {
 	auto frame = callStack.top();
 	auto val2 = dataStack.top();
 	dataStack.pop();
@@ -467,9 +480,53 @@ void rubbish::Context::ExecuteOr(const Instruction & instr)
 	(frame->instPtr)++;
 }
 
+int rubbish::Context::ExecuteNInstructions(int n) {
+	int executed = 0;
+	
+	for (int i = 0; i < n; i++) {
+		if (!IsDoneExecuting()) {
+			auto frame = callStack.top();
+			ExecuteInstruction(frame->functionInfo->instructions[frame->instPtr]);
+			executed++;
+		}
+		else {
+			break;
+		}
+	}
+
+	return executed;
+}
+
 void rubbish::Context::ExecuteAll() {
 	while (!callStack.empty()) {
 		auto frame = callStack.top();
 		ExecuteInstruction(frame->functionInfo->instructions[frame->instPtr]);
+	}
+}
+
+int rubbish::Scheduler::AddContext(std::unique_ptr<Context> context) {
+	int pid = currentUID;
+	currentUID++;
+
+	context->scheduler = this;	
+	context->pid = pid;
+
+	std::shared_ptr<Context> shared = std::move(context);
+	processStore[pid] = shared;
+	runQueue.push_back(std::move(shared));
+
+	return pid;
+}
+
+void rubbish::Scheduler::ExecuteAll() {
+	while (!runQueue.empty()) {
+		auto currentContext = runQueue.front();
+		runQueue.pop_front();
+		
+		currentContext->ExecuteNInstructions(numInstructionsPerRound);
+
+		if (!currentContext->IsDoneExecuting()) {
+			runQueue.push_back(std::move(currentContext));
+		}
 	}
 }

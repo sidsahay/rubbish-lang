@@ -7,6 +7,7 @@
 #include <stack>
 #include <functional>
 #include <exception>
+#include <deque>
 
 namespace rubbish {
 
@@ -32,7 +33,11 @@ namespace rubbish {
 		ValueValue value;
 		
 		Value();
+		Value(const Value& v);
 		Value(ValueType valueType, const ValueValue& value);
+
+		//DOES NOT CLEAN UP GENERAL PTR VALUES, but does clean strings
+		//~Value();
 	};
 
 	enum class InstructionType {
@@ -79,12 +84,14 @@ namespace rubbish {
 		FUNC_RUBBISH
 	};
 
+	struct Context;
+
 	struct FunctionInfo {
 		FunctionType type;
 		std::string name;
 		int arity;
 		std::vector<Instruction> instructions;
-		std::function<bool(std::stack<Value>&)> nativeFunction;
+		std::function<bool(Context&)> nativeFunction;
 	};
 
 	struct Frame {
@@ -93,15 +100,24 @@ namespace rubbish {
 		int instPtr = 0;
 	};
 
+	struct Scheduler;
+
 	struct Context {
+		Scheduler* scheduler = nullptr;
+
+		int pid = -1;
+		std::deque<Value> mailbox;
+
 		std::map<std::string, FunctionInfo*> functionStore;
 		std::stack<Value> dataStack;
 		std::stack<Frame*> callStack;
 
 		std::string topFunctionName;
 
+		bool IsDoneExecuting();
+		
 		void RegisterFunction(FunctionInfo* functionInfo);
-		void RegisterNativeFunction(std::string name, int arity, std::function<bool(std::stack<Value>&)> func);
+		void RegisterNativeFunction(std::string name, int arity, std::function<bool(Context&)> func);
 		void RegisterRubbishFunction(std::string name, int arity, const std::vector<Instruction>& instructions);
 		
 		void ExecuteInstruction(const Instruction& instr);
@@ -129,6 +145,19 @@ namespace rubbish {
 		void ExecuteAnd(const Instruction& instr);
 		void ExecuteOr(const Instruction& instr);
 
+		int ExecuteNInstructions(int n);
+		void ExecuteAll();
+	};
+
+	//Simple round robin scheduler with N instructions per process
+	struct Scheduler {
+		int numInstructionsPerRound = 5;
+		int currentUID = 0;
+
+		std::map<int, std::shared_ptr<Context>> processStore;
+		std::deque<std::shared_ptr<Context>> runQueue;
+
+		int AddContext(std::unique_ptr<Context> context);
 		void ExecuteAll();
 	};
 };

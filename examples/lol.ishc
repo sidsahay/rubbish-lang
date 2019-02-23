@@ -6,6 +6,11 @@ pop
 call "getOneInt"
 storevar "n"
 pop
+push "doSquare"
+loadvar "n"
+push 1
+call "spawn"
+pop
 loadvar "n"
 push 5
 eq
@@ -53,5 +58,26 @@ push 1
 storevar "ans"
 pop
 loadvar "ans"
+ret
+#endfunction
+#function "doSquare"
+storevar "n"
+pop
+loadvar "n"
+call "square"
+storevar "val"
+pop
+loadvar "val"
+call "printLn"
+pop
+loadvar "val"
+ret
+#endfunction
+#function "square"
+storevar "n"
+pop
+loadvar "n"
+loadvar "n"
+mul
 ret
 #endfunction

@@ -1,6 +1,7 @@
 fn main() {
     printLn("Enter_a_number:");
     n = getOneInt();
+    spawn("doSquare", n, 1);
     out = if n == 5 then "Is_Equal_to_5" else processFactorial(n);
     printLn(out);
     return 0; 
@@ -15,4 +16,14 @@ fn processFactorial(n) {
 fn factorial(n) {
     ans = if n == 0 then 1 else n * factorial(n-1);
     return ans;
+}
+
+fn doSquare(n) {
+    val = square(n);
+    printLn(val);
+    return val;
+}
+
+fn square(n) {
+    return n * n;
 }

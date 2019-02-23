@@ -1,0 +1,86 @@
+#topfunction "main"
+#function "main"
+call "getPid"
+storevar "pid"
+pop
+push "Enter_a_number:_"
+call "print"
+pop
+call "getOneInt"
+storevar "n"
+pop
+loadvar "pid"
+loadvar "n"
+call "printPidAndNumber"
+pop
+push "childProcess"
+push 0
+call "spawn"
+storevar "childPid"
+pop
+loadvar "childPid"
+loadvar "n"
+call "send"
+pop
+push 0
+ret
+#endfunction
+#function "childProcess"
+call "getPid"
+storevar "pid"
+pop
+call "receive"
+storevar "number"
+pop
+loadvar "pid"
+loadvar "number"
+call "printPidAndNumber"
+pop
+loadvar "pid"
+push 7
+lt
+jtrue 3
+push 0
+jmp 3
+loadvar "number"
+call "spawnAnotherChild"
+storevar "out"
+pop
+push 0
+ret
+#endfunction
+#function "spawnAnotherChild"
+storevar "number"
+pop
+push "childProcess"
+push 0
+call "spawn"
+storevar "childPid"
+pop
+loadvar "childPid"
+loadvar "number"
+call "send"
+pop
+push 0
+ret
+#endfunction
+#function "printPidAndNumber"
+storevar "num"
+pop
+storevar "pid"
+pop
+push "Process_"
+call "print"
+pop
+loadvar "pid"
+call "print"
+pop
+push "_got_number_"
+call "print"
+pop
+loadvar "num"
+call "printLn"
+pop
+push 0
+ret
+#endfunction
