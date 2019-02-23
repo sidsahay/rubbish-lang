@@ -1,0 +1,27 @@
+//Uses send() and receive() to calculate factorial from a process
+//Also should trigger the tail-call optimisation in factorialHelper()
+
+fn main() {
+    print("Enter_a_number:_");
+    n = getOneInt();
+
+    childPid = spawn("factorial", n, 1);
+    send(childPid, getPid()); //send own pid so child knows how to send to parent process
+
+    fact = receive();
+    print("Main_process_received_value_");
+    printLn(fact);
+
+    return 0;
+}
+
+fn factorial(n) {
+    parentPid = receive();
+    send(parentPid, factorialHelper(1, n));
+
+    return 0;
+}
+
+fn factorialHelper(acc, n) {
+    return if n == 0 then acc else factorialHelper(acc * n, n - 1);
+}

@@ -168,6 +168,7 @@ data Instruction = StoreVar String
                  | EndFunction
                  | Ret
                  | Call String
+                 | Retcall String
                  | Lt
                  | Gt
                  | Eq
@@ -192,6 +193,7 @@ instance Show Instruction where
             EndFunction -> "#endfunction"
             Ret -> "ret"
             Call str -> "call " ++ "\"" ++ str ++ "\""
+            Retcall str -> "retcall " ++ "\"" ++ str ++ "\""
             Lt -> "lt"
             Gt -> "gt"
             Eq -> "eq"
@@ -238,7 +240,21 @@ compileStmt stmt =
         Assign str expr -> compileExpr expr >> tell [StoreVar str, Pop]
         Seq stmtList -> mapM_ compileStmt stmtList
         FunCallStmt name argExprs -> mapM_ compileExpr argExprs >> tell [Call name, Pop]
-        Return expr -> compileExpr expr >> tell [Ret]
+        Return expr -> compileReturnExpr expr
+
+compileReturnExpr expr =
+    case expr of 
+        FunCallExpr name argExprs -> mapM_ compileExpr argExprs >> tell [Retcall name] --TCO
+        If decisionExpr thenExpr elseExpr -> 
+            do
+                let thenCompiled = snd . runWriter . compileReturnExpr $ thenExpr
+                let elseCompiled = snd . runWriter . compileReturnExpr $ elseExpr
+                compileExpr decisionExpr
+                tell [Jtrue (2 + length elseCompiled)]
+                tell elseCompiled
+                tell [Jmp (1 + length thenCompiled)]
+                tell thenCompiled
+        expr' -> compileExpr expr' >> tell [Ret]
 
 compileFunction :: Function -> Writer [Instruction] ()
 compileFunction (Function name args stmt) =

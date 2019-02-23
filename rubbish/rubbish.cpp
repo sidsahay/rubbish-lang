@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
 		path = argv[1];
 	}
 	else {
-		path = "C:\\Users\\Siddharth\\Source\\Repos\\sidsahay\\rubbish-lang\\examples\\potato.ishc";
+		path = "C:\\Users\\Siddharth\\Source\\Repos\\sidsahay\\rubbish-lang\\examples\\asyncfactorial.ishc";
 	}
 
 	Scheduler scheduler;

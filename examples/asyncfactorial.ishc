@@ -1,0 +1,65 @@
+#topfunction "main"
+#function "main"
+push "Enter_a_number:_"
+call "print"
+pop
+call "getOneInt"
+storevar "n"
+pop
+push "factorial"
+loadvar "n"
+push 1
+call "spawn"
+storevar "childPid"
+pop
+loadvar "childPid"
+call "getPid"
+call "send"
+pop
+call "receive"
+storevar "fact"
+pop
+push "Main_process_received_value_"
+call "print"
+pop
+loadvar "fact"
+call "printLn"
+pop
+push 0
+ret
+#endfunction
+#function "factorial"
+storevar "n"
+pop
+call "receive"
+storevar "parentPid"
+pop
+loadvar "parentPid"
+push 1
+loadvar "n"
+call "factorialHelper"
+call "send"
+pop
+push 0
+ret
+#endfunction
+#function "factorialHelper"
+storevar "n"
+pop
+storevar "acc"
+pop
+loadvar "n"
+push 0
+eq
+jtrue 9
+loadvar "acc"
+loadvar "n"
+mul
+loadvar "n"
+push 1
+sub
+retcall "factorialHelper"
+jmp 3
+loadvar "acc"
+ret
+#endfunction
