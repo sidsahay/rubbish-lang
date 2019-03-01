@@ -95,8 +95,6 @@ std::unique_ptr<Context> rubbish::parser::ParseFile(std::string path) {
 			else if (EQ(token, "call")) {
 				Instruction i;
 				i.type = InstructionType::INST_CALL;
-				token = strtok(NULL, " ");
-				i.value = ParseValue(token);
 				funcInfo->instructions.push_back(i);
 			}
 			else if (EQ(token, "ret")) {
@@ -107,8 +105,6 @@ std::unique_ptr<Context> rubbish::parser::ParseFile(std::string path) {
 			else if (EQ(token, "retcall")) {
 				Instruction i;
 				i.type = InstructionType::INST_RETCALL;
-				token = strtok(NULL, " ");
-				i.value = ParseValue(token);
 				funcInfo->instructions.push_back(i);
 			}
 			else if (EQ(token, "push")) {

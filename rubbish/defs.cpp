@@ -178,32 +178,41 @@ void rubbish::Context::ExecuteLoadVar(const Instruction & instr) {
 		dataStack.push(found->second);
 	}
 	else {
-		throw new std::exception;
+		//might be function value
+		auto foundFunc = functionStore.find(instr.value.value.stringVal);
+		if (foundFunc != functionStore.end()) {
+			Value v;
+			v.type = ValueType::VAL_FUNCPOINTER;
+			v.value.functionVal = foundFunc->second;
+			dataStack.push(v);
+		}
+		else {
+			throw new std::exception;
+		}
 	}
 	(frame->instPtr)++;
 }
 
 void rubbish::Context::ExecuteCall(const Instruction & instr) {
 	auto frame = callStack.top();
-	auto found = functionStore.find(instr.value.value.stringVal);
-	if (found != functionStore.end()) {
-		auto fInfo = found->second;
-		
-		switch (fInfo->type) {
-		case FunctionType::FUNC_NATIVE:
-			fInfo->nativeFunction(*this);
-			break;
+	auto val = dataStack.top();
+	checkTypeThrow(val, ValueType::VAL_FUNCPOINTER);
+	dataStack.pop();
 
-		case FunctionType::FUNC_RUBBISH:
-			auto framePtr = new Frame;
-			framePtr->functionInfo = fInfo;
-			framePtr->instPtr = 0;
-			callStack.push(framePtr);
-		}
+	auto fInfo = val.value.functionVal;
+
+	switch (fInfo->type) {
+	case FunctionType::FUNC_NATIVE:
+		fInfo->nativeFunction(*this);
+		break;
+
+	case FunctionType::FUNC_RUBBISH:
+		auto framePtr = new Frame;
+		framePtr->functionInfo = fInfo;
+		framePtr->instPtr = 0;
+		callStack.push(framePtr);
 	}
-	else {
-		throw new std::exception;
-	}
+
 	(frame->instPtr)++;
 }
 
@@ -218,24 +227,22 @@ void rubbish::Context::ExecuteRetcall(const Instruction & instr) {
 	delete frame;
 	callStack.pop();
 
-	auto found = functionStore.find(instr.value.value.stringVal);
-	if (found != functionStore.end()) {
-		auto fInfo = found->second;
+	auto val = dataStack.top();
+	checkTypeThrow(val, ValueType::VAL_FUNCPOINTER);
+	dataStack.pop();
 
-		switch (fInfo->type) {
-		case FunctionType::FUNC_NATIVE:
-			fInfo->nativeFunction(*this);
-			break;
+	auto fInfo = val.value.functionVal;
 
-		case FunctionType::FUNC_RUBBISH:
-			auto framePtr = new Frame;
-			framePtr->functionInfo = fInfo;
-			framePtr->instPtr = 0;
-			callStack.push(framePtr);
-		}
-	}
-	else {
-		throw new std::exception;
+	switch (fInfo->type) {
+	case FunctionType::FUNC_NATIVE:
+		fInfo->nativeFunction(*this);
+		break;
+
+	case FunctionType::FUNC_RUBBISH:
+		auto framePtr = new Frame;
+		framePtr->functionInfo = fInfo;
+		framePtr->instPtr = 0;
+		callStack.push(framePtr);
 	}
 }
 

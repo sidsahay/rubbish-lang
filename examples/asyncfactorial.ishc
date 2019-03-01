@@ -1,29 +1,37 @@
 #topfunction "main"
 #function "main"
 push "Enter_a_number:_"
-call "print"
+loadvar "print"
+call
 pop
-call "getOneInt"
+loadvar "getOneInt"
+call
 storevar "n"
 pop
 push "factorial"
 loadvar "n"
 push 1
-call "spawn"
+loadvar "spawn"
+call
 storevar "childPid"
 pop
 loadvar "childPid"
-call "getPid"
-call "send"
+loadvar "getPid"
+call
+loadvar "send"
+call
 pop
-call "receive"
+loadvar "receive"
+call
 storevar "fact"
 pop
 push "Main_process_received_value_"
-call "print"
+loadvar "print"
+call
 pop
 loadvar "fact"
-call "printLn"
+loadvar "printLn"
+call
 pop
 push 0
 ret
@@ -31,14 +39,17 @@ ret
 #function "factorial"
 storevar "n"
 pop
-call "receive"
+loadvar "receive"
+call
 storevar "parentPid"
 pop
 loadvar "parentPid"
 push 1
 loadvar "n"
-call "factorialHelper"
-call "send"
+loadvar "factorialHelper"
+call
+loadvar "send"
+call
 pop
 push 0
 ret
@@ -51,14 +62,15 @@ pop
 loadvar "n"
 push 0
 eq
-jtrue 9
+jtrue 10
 loadvar "acc"
 loadvar "n"
 mul
 loadvar "n"
 push 1
 sub
-retcall "factorialHelper"
+loadvar "factorialHelper"
+retcall
 jmp 3
 loadvar "acc"
 ret

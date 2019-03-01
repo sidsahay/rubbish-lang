@@ -1,0 +1,24 @@
+fn add(a, b) {
+    return a + b;
+}
+
+fn sub(a, b) {
+    return a - b;
+}
+
+fn mul(a, b) {
+    return a * b;
+}
+
+fn div(a, b) {
+    return a / b;
+}
+
+fn doBinOp(func, v1, v2) {
+    return func(v1, v2);
+}
+
+fn main() {
+    print(doBinOp(add, 5, 6));
+    return 0;
+}

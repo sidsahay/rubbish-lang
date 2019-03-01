@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
 		path = argv[1];
 	}
 	else {
-		path = "C:\\Users\\Siddharth\\Source\\Repos\\sidsahay\\rubbish-lang\\examples\\asyncfactorial.ishc";
+		path = "C:\\Users\\Siddharth\\Source\\Repos\\sidsahay\\rubbish-lang\\examples\\hof.ishc";
 	}
 
 	Scheduler scheduler;
@@ -24,5 +24,9 @@ int main(int argc, char** argv) {
 	context->LoadInternalTopLevelFunction();
 	scheduler.AddContext(std::move(context));
 	scheduler.ExecuteAll();
+
+	int x;
+	cin >> x;
+
 	return 0;
 }

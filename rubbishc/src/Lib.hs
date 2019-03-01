@@ -167,8 +167,8 @@ data Instruction = StoreVar String
                  | FunctionInst String
                  | EndFunction
                  | Ret
-                 | Call String
-                 | Retcall String
+                 | Call
+                 | RetCall
                  | Lt
                  | Gt
                  | Eq
@@ -192,8 +192,8 @@ instance Show Instruction where
             FunctionInst str -> "#function " ++ "\"" ++ str ++ "\""
             EndFunction -> "#endfunction"
             Ret -> "ret"
-            Call str -> "call " ++ "\"" ++ str ++ "\""
-            Retcall str -> "retcall " ++ "\"" ++ str ++ "\""
+            Call -> "call"
+            RetCall -> "retcall"
             Lt -> "lt"
             Gt -> "gt"
             Eq -> "eq"
@@ -223,7 +223,7 @@ compileExpr expr =
         Binary op e1 e2 -> compileExpr e1 >> compileExpr e2 >> tell [opToInst op]
         Neg e -> compileExpr e >> tell [Push . IntegerVal $ -1, Mul]
         NotExpr e -> compileExpr e >> tell [Not]
-        FunCallExpr name argExprs -> mapM_ compileExpr argExprs >> tell [Call name]
+        FunCallExpr name argExprs -> mapM_ compileExpr argExprs >> tell [LoadVar name, Call]
         If decisionExpr thenExpr elseExpr -> 
             do
                 let thenCompiled = snd . runWriter . compileExpr $ thenExpr
@@ -239,12 +239,12 @@ compileStmt stmt =
     case stmt of
         Assign str expr -> compileExpr expr >> tell [StoreVar str, Pop]
         Seq stmtList -> mapM_ compileStmt stmtList
-        FunCallStmt name argExprs -> mapM_ compileExpr argExprs >> tell [Call name, Pop]
+        FunCallStmt name argExprs -> mapM_ compileExpr argExprs >> tell [LoadVar name, Call, Pop]
         Return expr -> compileReturnExpr expr
 
 compileReturnExpr expr =
     case expr of 
-        FunCallExpr name argExprs -> mapM_ compileExpr argExprs >> tell [Retcall name] --TCO
+        FunCallExpr name argExprs -> mapM_ compileExpr argExprs >> tell [LoadVar name, RetCall] --TCO
         If decisionExpr thenExpr elseExpr -> 
             do
                 let thenCompiled = snd . runWriter . compileReturnExpr $ thenExpr

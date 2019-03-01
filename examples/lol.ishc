@@ -1,28 +1,33 @@
 #topfunction "main"
 #function "main"
 push "Enter_a_number:"
-call "printLn"
+loadvar "printLn"
+call
 pop
-call "getOneInt"
+loadvar "getOneInt"
+call
 storevar "n"
 pop
 push "doSquare"
 loadvar "n"
 push 1
-call "spawn"
+loadvar "spawn"
+call
 pop
 loadvar "n"
 push 5
 eq
-jtrue 4
+jtrue 5
 loadvar "n"
-call "processFactorial"
+loadvar "processFactorial"
+call
 jmp 2
 push "Is_Equal_to_5"
 storevar "out"
 pop
 loadvar "out"
-call "printLn"
+loadvar "printLn"
+call
 pop
 push 0
 ret
@@ -31,11 +36,13 @@ ret
 storevar "n"
 pop
 loadvar "n"
-call "factorial"
+loadvar "factorial"
+call
 storevar "fact"
 pop
 loadvar "fact"
-call "printLn"
+loadvar "printLn"
+call
 pop
 push "Is_not_Equal_to_5"
 ret
@@ -46,12 +53,13 @@ pop
 loadvar "n"
 push 0
 eq
-jtrue 8
+jtrue 9
 loadvar "n"
 loadvar "n"
 push 1
 sub
-call "factorial"
+loadvar "factorial"
+call
 mul
 jmp 2
 push 1
@@ -64,11 +72,13 @@ ret
 storevar "n"
 pop
 loadvar "n"
-call "square"
+loadvar "square"
+call
 storevar "val"
 pop
 loadvar "val"
-call "printLn"
+loadvar "printLn"
+call
 pop
 loadvar "val"
 ret

@@ -33,6 +33,10 @@ namespace rubbish {
 			case ValueType::VAL_STRING:
 				std::cout << "[String] " << val.value.stringVal << std::endl;
 				break;
+
+			case ValueType::VAL_FUNCPOINTER:
+				std::cout << "[FuncPtr] " << val.value.functionVal->name.c_str() << " " << reinterpret_cast<void*>(val.value.functionVal) << std::endl;
+				break;
 			}
 
 			return true;
@@ -63,6 +67,10 @@ namespace rubbish {
 
 			case ValueType::VAL_STRING:
 				std::cout << val.value.stringVal;
+				break;
+
+			case ValueType::VAL_FUNCPOINTER:
+				std::cout << "[FuncPtr] " << reinterpret_cast<void*>(val.value.functionVal);
 				break;
 			}
 
@@ -155,9 +163,9 @@ namespace rubbish {
 
 		bool ReceiveFunc(Context& context) {
 			if (context.mailbox.empty()) {
-				//do nothing i.e. move the frame pointer back by one so receive() is executed again
+				//do nothing i.e. move the frame pointer back by two so receive() is executed again (loadvar -> call)
 				auto frame = context.callStack.top();
-				(frame->instPtr)--;
+				(frame->instPtr) -= 2;
 			}
 			else {
 				auto val = context.mailbox.front();

@@ -17,7 +17,24 @@ namespace rubbish {
 		VAL_STRING,
 		VAL_BOOL,
 		VAL_POINTER,
+		VAL_FUNCPOINTER,
 		VAL_INVALID
+	};
+
+	enum class FunctionType {
+		FUNC_NATIVE,
+		FUNC_RUBBISH
+	};
+
+	struct Context;
+	struct Instruction;
+
+	struct FunctionInfo {
+		FunctionType type;
+		std::string name;
+		int arity;
+		std::vector<Instruction> instructions;
+		std::function<bool(Context&)> nativeFunction;
 	};
 
 	union ValueValue {
@@ -26,6 +43,7 @@ namespace rubbish {
 		char* stringVal;
 		bool boolVal;
 		void* pointerVal;
+		FunctionInfo* functionVal;
 	};
 
 	struct Value {
@@ -78,21 +96,6 @@ namespace rubbish {
 			throw new std::exception;
 		}
 	}
-
-	enum class FunctionType {
-		FUNC_NATIVE,
-		FUNC_RUBBISH
-	};
-
-	struct Context;
-
-	struct FunctionInfo {
-		FunctionType type;
-		std::string name;
-		int arity;
-		std::vector<Instruction> instructions;
-		std::function<bool(Context&)> nativeFunction;
-	};
 
 	struct Frame {
 		FunctionInfo* functionInfo;
@@ -149,7 +152,7 @@ namespace rubbish {
 		void ExecuteAll();
 	};
 
-	//Simple round robin scheduler with N instructions per process
+	//Simple round robin scheduler with N instructions per process per round
 	struct Scheduler {
 		int numInstructionsPerRound = 5;
 		int currentUID = 0;

@@ -1,49 +1,59 @@
 #topfunction "main"
 #function "main"
-call "getPid"
+loadvar "getPid"
+call
 storevar "pid"
 pop
 push "Enter_a_number:_"
-call "print"
+loadvar "print"
+call
 pop
-call "getOneInt"
+loadvar "getOneInt"
+call
 storevar "n"
 pop
 loadvar "pid"
 loadvar "n"
-call "printPidAndNumber"
+loadvar "printPidAndNumber"
+call
 pop
 push "childProcess"
 push 0
-call "spawn"
+loadvar "spawn"
+call
 storevar "childPid"
 pop
 loadvar "childPid"
 loadvar "n"
-call "send"
+loadvar "send"
+call
 pop
 push 0
 ret
 #endfunction
 #function "childProcess"
-call "getPid"
+loadvar "getPid"
+call
 storevar "pid"
 pop
-call "receive"
+loadvar "receive"
+call
 storevar "number"
 pop
 loadvar "pid"
 loadvar "number"
-call "printPidAndNumber"
+loadvar "printPidAndNumber"
+call
 pop
 loadvar "pid"
 push 7
 lt
 jtrue 3
 push 0
-jmp 3
+jmp 4
 loadvar "number"
-call "spawnAnotherChild"
+loadvar "spawnAnotherChild"
+call
 storevar "out"
 pop
 push 0
@@ -54,12 +64,14 @@ storevar "number"
 pop
 push "childProcess"
 push 0
-call "spawn"
+loadvar "spawn"
+call
 storevar "childPid"
 pop
 loadvar "childPid"
 loadvar "number"
-call "send"
+loadvar "send"
+call
 pop
 push 0
 ret
@@ -70,16 +82,20 @@ pop
 storevar "pid"
 pop
 push "Process_"
-call "print"
+loadvar "print"
+call
 pop
 loadvar "pid"
-call "print"
+loadvar "print"
+call
 pop
 push "_got_number_"
-call "print"
+loadvar "print"
+call
 pop
 loadvar "num"
-call "printLn"
+loadvar "printLn"
+call
 pop
 push 0
 ret
