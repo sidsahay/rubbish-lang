@@ -1,0 +1,1 @@
+add_custom_target(rubbishc WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/rubbishc COMMAND stack install --local-bin-path ${CMAKE_BINARY_DIR}/build_output)

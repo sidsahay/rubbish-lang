@@ -36,6 +36,7 @@ data Expr = Binary BinOp Expr Expr
           | Value Val
           | Identifier String
           | FunCallExpr String [Expr]
+          | LambdaExpr [String] Stmt
           | If Expr Expr Expr
           deriving Show
 
@@ -55,7 +56,7 @@ languageDef =
              , Token.identStart = letter
              , Token.identLetter = alphaNum
              , Token.reservedNames = ["fn", "return", "true", "false", "if", "then", "else"]
-             , Token.reservedOpNames = ["+", "-", "*", "/", "=", "&&", "||", "!", ">", "<"]
+             , Token.reservedOpNames = ["+", "-", "*", "/", "=", "&&", "||", "!", ">", "<", "\\"]
              }
 
 lexer = Token.makeTokenParser languageDef
@@ -84,6 +85,7 @@ function = do
 
 statement :: Parser Stmt
 statement = parens statement <|> sequenceOfStmt
+
 
 sequenceOfStmt =
     do

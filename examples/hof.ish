@@ -19,6 +19,6 @@ fn doBinOp(func, v1, v2) {
 }
 
 fn main() {
-    print(doBinOp(add, 5, 6));
+    print(doBinOp(mul, 5, 6));
     return 0;
 }
