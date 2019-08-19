@@ -15,3 +15,6 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Bb]uild/
+
+#Tool files
+*.swp
