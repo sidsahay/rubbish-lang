@@ -3,7 +3,7 @@
 #
 cmake_minimum_required (VERSION 3.8)
 
-project ("rubbish")
+project ("rubbish" C)
 
 #Run stack setup to build stuff
 execute_process(WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/rubbishc COMMAND stack setup)
