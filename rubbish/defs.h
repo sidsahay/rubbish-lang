@@ -8,6 +8,7 @@
 #include <functional>
 #include <exception>
 #include <deque>
+#include <cstring>
 
 namespace rubbish {
 
